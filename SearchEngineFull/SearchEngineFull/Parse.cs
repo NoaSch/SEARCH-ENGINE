@@ -31,13 +31,13 @@ namespace SearchEngine
             docInfo = new Dictionary<string, DocumentData>();
             stopWords = new HashSet<string>();
 
-            StreamReader file = new StreamReader(swPath + @"\stop_words.txt");
+            StreamReader file = new StreamReader("stop_words.txt");
             stemmer = new Stemmer();
 
             //read the stopwords file and add them to the hashSet
             while ((line = file.ReadLine()) != null)
             {
-                stopWords.Add(line);
+                stopWords.Add(line.ToLower());
             }
 
             //initialize the monthes dictionary

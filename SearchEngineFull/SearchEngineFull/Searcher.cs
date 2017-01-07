@@ -11,10 +11,10 @@ namespace SearchEngine
     {
 
         public Dictionary<string, TermData> MainDictionary;
-        public  Dictionary<string, DocumentData> DocInfo; 
+        public Dictionary<string, DocumentData> DocInfo;
         string CorpusFolder;
-        string postingPath; 
-        public Searcher(Dictionary<string, TermData> mainDictionary, string corpusFolder, bool stemmer, string postingsFolder,  Dictionary<string, DocumentData> docInfo)
+        string postingPath;
+        public Searcher(Dictionary<string, TermData> mainDictionary, string corpusFolder, bool stemmer, string postingsFolder, Dictionary<string, DocumentData> docInfo)
         {
 
             MainDictionary = mainDictionary;
@@ -23,7 +23,7 @@ namespace SearchEngine
                 postingPath = postingsFolder + @"\with Stemmer";
             else postingPath = postingsFolder + @"\withOut Stemmer";
             postingPath = postingPath + @"\";
-            DocInfo = docInfo; 
+            DocInfo = docInfo;
 
         }
 
@@ -32,7 +32,7 @@ namespace SearchEngine
             Dictionary<string, Dictionary<string, int>> QueryDictionary = new Dictionary<string, Dictionary<string, int>>();
 
             Parse p = new Parse(CorpusFolder, false);
-            Ranker ranker = new Ranker(DocInfo, MainDictionary); 
+            Ranker ranker = new Ranker(DocInfo, MainDictionary);
             Dictionary<string, int> afterParse = p.parseFile(new DocumentData(), Query);
             foreach (string term in afterParse.Keys)
             {
@@ -53,7 +53,7 @@ namespace SearchEngine
 
                     splitedLine = output.Split('^', '~');
                     int length = splitedLine.Length;
-                    length= length - 2; 
+                    length = length - 2;
                     for (int j = 1; j < length; j = j + 2)
                     {
                         QueryDictionary[term].Add(splitedLine[j], int.Parse(splitedLine[j + 1]));
@@ -61,7 +61,7 @@ namespace SearchEngine
                     }
                 }
 
-                else QueryDictionary[term] = null; 
+                else QueryDictionary[term] = null;
 
 
 

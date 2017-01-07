@@ -37,13 +37,12 @@
             <Image x:Name="imageClock" Height="35" Source="Pics/clock.png" HorizontalAlignment="Left" Width="30" Margin="0,2" Visibility="Hidden"/>
             <Label x:Name="labelClock" Content="Indexing in progress. Please wait!" FontSize="16" FontFamily="Segoe UI Black" Width="660" Height="50" VerticalAlignment="Top" Margin="0,0,0,-10" RenderTransformOrigin="0.739,0.552" Visibility="Hidden" />
         </StackPanel>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Height="54" Margin="420,296,0,0" VerticalAlignment="Top" Width="80" Click="button_Click"/>
         <StackPanel HorizontalAlignment="Left" Height="425" Margin="590,20,-7,0" VerticalAlignment="Top" Width="595">
             <StackPanel Height="40" Orientation="Horizontal" Margin="0,0,0.333,0">
                 <Label x:Name="labelQuery" Content="Query:" Width="55" FontWeight="Bold"/>
-                <TextBox x:Name="textBoxQuery" TextWrapping="Wrap" Width="295" Height="40" VerticalAlignment="Top"/>
-                <ComboBox x:Name="comboBoxAuto" Width="120"/>
-                <Button x:Name="butExec" Content="execute this query" Margin="10,0,360,0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="101" Height="40"/>
+                <TextBox x:Name="textBoxQuery" TextWrapping="Wrap" Width="295" Height="40" VerticalAlignment="Top" TextChanged="textBoxQuery_TextChanged"/>
+                <ComboBox x:Name="comboBoxAuto" Width="120" Height="40" VerticalAlignment="Top" SelectionChanged="comboBoxAuto_SelectionChanged"/>
+                <Button x:Name="butExec" Content="execute this query" Margin="10,0,360,0" HorizontalAlignment="Center" Width="101" Height="40" VerticalAlignment="Top" Click="button_Click"/>
             </StackPanel>
             <StackPanel Height="65" Orientation="Horizontal">
                 <Label x:Name="labelQWueryFile" Content="path to queries file" Margin="0,10,0,0"/>

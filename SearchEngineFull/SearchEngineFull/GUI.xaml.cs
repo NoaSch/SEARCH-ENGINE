@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -13,7 +14,7 @@ namespace SearchEngine
     /// </summary>
     public partial class GUI : Window
     {
-
+        int currStringLen;
         ///lera
         //////noa
         ///mainDictionary to show 
@@ -25,14 +26,18 @@ namespace SearchEngine
         internal string postingsFolder = "";
         bool stemmer = false;
         ReadFile rf;
-
+        Dictionary<string, List<string>> autoCompleteDic;
         public GUI()
         {
             InitializeComponent();
             mainDictionary = new Dictionary<string, TermData>();
             AutoCompletion = new Dictionary<string, List<string>>();
             docInfo = new Dictionary<string, DocumentData>();
+            autoCompleteDic = new Dictionary<string, List<string>>();
+            loadLang();
+            comboBoxAuto.Visibility = Visibility.Collapsed;
         }
+
 
         //delete all the folders and reset the class Read File
         private void resetButton_Click(object sender, RoutedEventArgs e)
@@ -58,7 +63,7 @@ namespace SearchEngine
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
 
-          
+
             corpusFolder = InputPathTxt.Text;
             postingsFolder = postingsTextBox.Text;
             if (corpusFolder == "" || postingsFolder == "")
@@ -111,7 +116,7 @@ namespace SearchEngine
                 System.Windows.MessageBox.Show("Path Required!", "Error");
             else
             {
-                try
+                /*try
                 {
                     string[] lines;
                     if (stemmer)
@@ -130,7 +135,7 @@ namespace SearchEngine
                         mainDictionary[term].LineNum= int.Parse(splitedLine[3]);
                         mainDictionary[term].NumInCorpus = int.Parse(splitedLine[4]);
                     }
-                    */
+                    
 
 
                     foreach (string line in lines)
@@ -144,6 +149,12 @@ namespace SearchEngine
                 {
                     System.Windows.MessageBox.Show("No dictionary found!");
                 }
+                */
+                loadDictionarys();
+
+                autoCompleteDic = LoadAfterDic();
+                System.Windows.MessageBox.Show("loaded completed!");
+
             }
 
 
@@ -207,12 +218,17 @@ namespace SearchEngine
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            loadDictionarys();
-            string s = "Water Pollution";
-            Searcher search = new Searcher(mainDictionary, corpusFolder, stemmer, postingsFolder, docInfo);
-            search.search(s);
+            if (dictionary == null)
+                System.Windows.MessageBox.Show("No dictionary found!");
 
+            else
+            {
+                //loadDictionarys();
+                //string s = "Water Pollution";
+                Searcher search = new Searcher(mainDictionary, corpusFolder, stemmer, postingsFolder, docInfo);
+                search.search(textBoxQuery.Text.Trim());
 
+            }
 
         }
 
@@ -227,7 +243,7 @@ namespace SearchEngine
             try
             {
                 mainDictionary = new Dictionary<string, TermData>();
-                docInfo = new Dictionary<string, DocumentData>(); 
+                docInfo = new Dictionary<string, DocumentData>();
                 string[] lines;
                 if (stemmer)
                     lines = File.ReadAllLines(path + @"\with Stemmer" + @"\dictionary.txt");
@@ -243,6 +259,8 @@ namespace SearchEngine
                     mainDictionary[term].Path = splitedLine[2];
                     mainDictionary[term].LineNum = int.Parse(splitedLine[3]);
                     mainDictionary[term].NumInCorpus = int.Parse(splitedLine[4]);
+                    dictionary.Add(splitedLine[0], int.Parse(splitedLine[4]));
+
                 }
 
                 string[] doclines;
@@ -299,6 +317,99 @@ namespace SearchEngine
             }
         }
 
+        private void loadLang()
+        {
+            List<string> l = new List<string>();
+            StreamReader srLangs = new StreamReader("langs.txt");
+            string line = srLangs.ReadLine();
+            while (line != null)
+            {
+                l.Add(line);
+                line = srLangs.ReadLine();
+            }
+            comboBoxLang.ItemsSource = l;
 
+
+        }
+
+        private void textBoxQuery_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (dictionary == null)
+            {
+                System.Windows.MessageBox.Show("No dictionary found!");
+            }
+            if (textBoxQuery.Text.EndsWith(" "))
+                HandleWhitespace();
+            else if (textBoxQuery.Text == "")
+            {
+                comboBoxAuto.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void HandleWhitespace()
+        {
+
+            string term = textBoxQuery.Text.Substring(0, textBoxQuery.Text.Length - 1).ToLower();
+            if (autoCompleteDic.ContainsKey(term))
+            {
+                currStringLen = term.Length + 1;
+                comboBoxAuto.ItemsSource = autoCompleteDic[term];
+                comboBoxAuto.Visibility = Visibility.Visible;
+
+            }
+
+        }
+        private Dictionary<string, List<string>> LoadAfterDic()
+        {
+            Dictionary<string, List<string>> afterCompleteDic = new Dictionary<string, List<string>>();
+            StreamReader srAfter;
+            if (dictionary.Count == 0)
+                System.Windows.MessageBox.Show("No dictionary found!");
+            else
+            {
+                if (stemmer)
+
+                    srAfter = new StreamReader(postingsFolder + @"\with Stemmer\after.txt");
+                else
+                    srAfter = new StreamReader(postingsFolder + @"\withOut Stemmer\after.txt");
+                string line = srAfter.ReadLine();
+                while (line != null)
+                {
+                    string[] splitedLine = line.Split('~');
+                    string term = splitedLine[0];
+                    List<string> l = new List<string>();
+                    for (int i = 1; i < splitedLine.Length; i += 2)
+                    {
+                        l.Add(splitedLine[i]);
+                    }
+                    afterCompleteDic.Add(term, l);
+                    line = srAfter.ReadLine();
+                }
+            }
+
+            return afterCompleteDic;
+        }
+
+        private void comboBoxAuto_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboBoxAuto.SelectedValue == null)
+            {
+
+            }
+            else if (textBoxQuery.Text.Length == currStringLen)
+                textBoxQuery.Text += comboBoxAuto.SelectedValue.ToString();
+            else
+            {
+                string[] splited = textBoxQuery.Text.Split(' ');
+                textBoxQuery.Text = "";
+                for (int i = 0; i < splited.Length - 1; i++)
+                {
+                    textBoxQuery.Text += splited[i];
+                    textBoxQuery.Text += " ";
+
+                }
+                textBoxQuery.Text += comboBoxAuto.SelectedValue.ToString();
+            }
+        }
     }
 }
