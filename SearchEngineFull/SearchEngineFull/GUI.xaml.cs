@@ -18,6 +18,9 @@ namespace SearchEngine
         ///lera
         //////noa
         ///mainDictionary to show 
+        ///
+        List<KeyValuePair<string, double>> queryResult;
+
         Dictionary<string, int> dictionary;
         public Dictionary<string, DocumentData> docInfo;
         public Dictionary<string, TermData> mainDictionary;
@@ -226,7 +229,18 @@ namespace SearchEngine
                 //loadDictionarys();
                 //string s = "Water Pollution";
                 Searcher search = new Searcher(mainDictionary, corpusFolder, stemmer, postingsFolder, docInfo);
-                search.search(textBoxQuery.Text.Trim());
+                //execute the query
+                queryResult = search.search(textBoxQuery.Text.Trim());
+                List<string> resultList = new List<string>();
+
+                for (int i = 0; i < Math.Min(queryResult.Count, 50); i++)
+                {
+                    resultList.Add(i + 1 + ". " + queryResult[i].Key);
+                }
+                //show the result
+                queryResultsWin qw = new queryResultsWin(resultList, resultList.Count);
+                qw.ShowDialog();
+
 
             }
 

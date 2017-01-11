@@ -72,6 +72,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="queryResultsWin.xaml.cs">
+      <DependentUpon>queryResultsWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DictionaryWin.xaml.cs">
       <DependentUpon>DictionaryWin.xaml</DependentUpon>
     </Compile>
@@ -119,6 +122,10 @@
     <Resource Include="Pics\clock.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="queryResultsWin.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DictionaryWin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

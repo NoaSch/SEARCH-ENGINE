@@ -27,7 +27,7 @@ namespace SearchEngine
 
         }
 
-        public void search(string Query)
+        public List<KeyValuePair<string, double>> search(string Query)
         {
             Dictionary<string, Dictionary<string, int>> QueryDictionary = new Dictionary<string, Dictionary<string, int>>();
 
@@ -66,8 +66,11 @@ namespace SearchEngine
 
 
             }
-            ranker.rank(QueryDictionary, afterParse);
+            List<KeyValuePair<string, double>> queryResult = ranker.rank(QueryDictionary, afterParse);
+            queryResult.Reverse();
 
+
+            return queryResult;
 
 
         }
